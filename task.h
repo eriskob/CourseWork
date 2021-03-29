@@ -1,3 +1,5 @@
+#ifndef TASK_H
+#define TASK_H
 #include <vector>
 
 class task{
@@ -7,7 +9,6 @@ class task{
         int prio;
         int period;
         int procnum;
-        int maj_fr;
         std::vector<int> anomaltasks;
     public:
         task(int num);
@@ -17,6 +18,15 @@ class task{
         int get_prio();
         int get_period();
         int get_procnum();
-        int get_maj_fr();
         void find_anomaltasks();
+        std::vector<int> get_anomaltasks();
 };
+class system_config{
+        int tasks;
+        int maj_fr;
+    public:
+        system_config();
+        int get_number_of_tasks();
+        int get_maj_fr();
+};
+#endif
