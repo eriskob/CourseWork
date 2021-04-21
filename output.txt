@@ -1,0 +1,6 @@
+
+
+WCRT = 984
+Period = 5722
+Task num = 29
+Time = 0.006093

@@ -98,9 +98,6 @@ void task::find_anomaltasks(){
         for(auto j = (*i).begin(); j != (*i).end(); j++){
             this->anomaltasks.push_back((*j));
         }
-    for(int i = 0; i < anomaltasks.size(); i++){
-        std::cout << anomaltasks[i] << " ";
-    }
 
 }
 std::vector<int> task::get_anomaltasks(){
