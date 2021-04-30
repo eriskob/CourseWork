@@ -11,16 +11,16 @@ solution::solution(int tasknum){
     this->task_num = tasknum;
     task target(tasknum);
     std::vector<task> anomal_tasks;
-    target.find_anomaltasks();
-    this->num = target.get_anomaltasks().size();
-    for(int i = 0; i < num; i++){
-        anomal_tasks.push_back(target.get_anomaltasks()[i]);
-    }
-    for(int i = 0; i < num; i++){
-        bounds.push_back(std::pair<int, int>());
-        bounds[i].first = anomal_tasks[i].get_bcet();
-        bounds[i].second = anomal_tasks[i].get_wcet();
-    }
+    // target.find_anomaltasks();
+    // this->num = target.get_anomaltasks().size();
+    // for(int i = 0; i < num; i++){
+    //     anomal_tasks.push_back(target.get_anomaltasks()[i]);
+    // }
+    // for(int i = 0; i < num; i++){
+    //     bounds.push_back(std::pair<int, int>());
+    //     bounds[i].first = anomal_tasks[i].get_bcet();
+    //     bounds[i].second = anomal_tasks[i].get_wcet();
+    // }
 }
 std::vector<std::pair<int, int> >  solution::get_bounds(){
     return this->bounds;
@@ -56,10 +56,16 @@ void solution::get_lower_estimate(){
     if(tmp.get_period() < this->lower_est){
         this->lower_est -= tmp.get_period();
     }
-    std::cout << this->lower_est << "\n";
+    // std::cout << this->lower_est << "\n";
 }
-void solution::get_upper_estimate(){
-    std::string buffer, num, path = "../Course_work-master/novel_algorithm ./input.xml " + std::to_string(this->task_num) + " >./output.txt";
+int solution::get_le(){
+    return this->lower_est;
+}
+int solution::get_ue(){
+    return this->upper_est;
+}
+void solution::get_upper_estimate(std::string path_file){
+    std::string buffer, num, path = "../Course_work-master/novel_algorithm " + path_file + " " + std::to_string(this->task_num) + " >./output.txt";
     system(path.c_str());
     std::ifstream requests("./output.txt");
     std::string name("WCRT");
@@ -82,5 +88,5 @@ void solution::get_upper_estimate(){
         }
     }
     this->upper_est = vals[0];
-    std::cout << this->upper_est << "\n";
+    // std::cout << this->upper_est << "\n";
 }

@@ -1,6 +1,6 @@
 
 
-WCRT = 984
+WCRT = 4107
 Period = 5722
 Task num = 29
-Time = 0.006093
+Time = 0.004921
