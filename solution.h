@@ -14,7 +14,7 @@ class solution{
         solution(int tasknum);
         int get_le();
         int get_ue();
-        void get_lower_estimate();
+        void get_lower_estimate(std::string path_file);
         void get_upper_estimate(std::string path_file);
         std::vector<std::pair<int, int> > get_bounds();
 };

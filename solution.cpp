@@ -25,10 +25,10 @@ solution::solution(int tasknum){
 std::vector<std::pair<int, int> >  solution::get_bounds(){
     return this->bounds;
 }
-void solution::get_lower_estimate(){
+void solution::get_lower_estimate(std::string path_file){
     this->lower_est = 0;
     task tmp(this->task_num);
-    std::string path = std::string("./WCRT/IMASimulator/generator/model_builder/model_builder data.xml > scenario.xml");
+    std::string path = std::string("./WCRT/IMASimulator/generator/model_builder/model_builder " + path_file + " > scenario.xml");
     system(path.c_str());
     xml_document<char> doc;
     std::ifstream file("../CourseWorkpubl-master/scenario.xml");
