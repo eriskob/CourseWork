@@ -5,6 +5,7 @@
 #include <string>
 #include <set>
 #include <charconv>
+#include <algorithm>
 #include <utility>
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
@@ -90,20 +91,25 @@ void find_solution(task tmp1, solution tmp2, std::vector<task> anom_tasks, std::
     int est = tmp2.get_ue();
     system("cp input.xml input1.xml");
     system("cp data.xml data1.xml");
+    std::vector<int> wb;
+    
     for(int i = 0; i < anom_tasks.size(); i++){
         // std::cout << "2\n";
-        std::cout << anom_tasks[i].get_bcet() << " " << anom_tasks[i].get_wcet() << "\n";
+        std::cout << "wcet: " << anom_tasks[i].get_wcet() << " bcet: " << anom_tasks[i].get_bcet() << "\n";
+        // for(int j = anom_tasks[i].get_wcet(); j >= anom_tasks[i].get_bcet(); j--){
+        //     // std::cout << "here2\n";
+        //     create_inputfile_le(std::string("data1.xml"), i, j);
+        //     // std::cout << "here3\n";
+        //     tmp2.get_lower_estimate("data1.xml");
+        //     int opt_tmp = tmp2.get_le();
+        //     if(opt_tmp > opt){
+        //         opt = opt_tmp;
+        //     }
+        // }
         for(int j = anom_tasks[i].get_wcet(); j >= anom_tasks[i].get_bcet(); j--){
-            // std::cout << "here2\n";
-            create_inputfile_le(std::string("data1.xml"), i, j);
-            // std::cout << "here3\n";
-            tmp2.get_lower_estimate("data1.xml");
-            int opt_tmp = tmp2.get_le();
-            if(opt_tmp > opt){
-                opt = opt_tmp;
-            }
+            wb.push_back(j);
         }
-        for(int j = anom_tasks[i].get_wcet(); j >= anom_tasks[i].get_bcet(); j--){
+        for(int j = 0; j < wb.size(); j++){
             // std::cout << "3\n";
             create_inputfile_ue(std::string("input1.xml"), i, j);
             tmp2.get_upper_estimate("input1.xml");
@@ -112,6 +118,9 @@ void find_solution(task tmp1, solution tmp2, std::vector<task> anom_tasks, std::
             if(est >= opt){
                 opt = est;
                 break;
+            }
+            else{
+                wb.erase(std::remove(wb.begin(), wb.end(), wb[j]), wb.end());
             }
         }
     }
