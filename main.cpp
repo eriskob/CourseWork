@@ -72,7 +72,7 @@ void create_inputfile_le(std::string path, int tasknum, int val){
 void rec(std::vector<task> anom_tasks, int & opt, int & est, task tmp1, solution tmp2){
     std::cout << anom_tasks[0].get_taskindex() << " " << anom_tasks[0].get_wcet() << " " << anom_tasks[0].get_bcet() << " \n";
     for(int j = anom_tasks[0].get_wcet(); j >= anom_tasks[0].get_bcet(); j--){
-        create_inputfile_ue("input1.xml", tmp1.get_taskindex(), j);
+        create_inputfile_ue("input1.xml", anom_tasks[0].get_taskindex(), j);
         tmp2.get_upper_estimate("input1.xml");
         est = tmp2.get_ue();
         if(est >= opt){
@@ -115,7 +115,7 @@ int main(){
     std::vector<task> anom_tasks;
     std::vector<solution> anom_sol;
     std::vector<int> anom_t_ind = tmp1.get_anomaltasks();
-    // std::cout << anom_t_ind[0] << "\n";
+    std::cout << anom_t_ind[0] << "\n";
     for(int i = 0; i < anom_t_ind.size(); i++){
         anom_tasks.push_back(task(anom_t_ind[i]));
     }
