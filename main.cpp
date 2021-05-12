@@ -37,50 +37,54 @@ void create_inputfile_ue(std::string path, int tasknum, int val){
 }
 
 void create_inputfile_le(std::string path, int tasknum, int val){
-    // std::cout << "there1\n";
     xml_document<char> doc;
     std::ifstream file(path);
     std::vector<char> buffer((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     buffer.push_back('\0');
     doc.parse<0>(&buffer[0]);
-    // std::cout << "there2\n";
     xml_node<> *root_node = doc.first_node("system");
-    // std::cout << "there3\n";
     xml_node<> *node1 = root_node->first_node("module");
-    // std::cout << "there4\n";
     for(; node1; node1 = node1->next_sibling()){
-        // std::cout << "there5\n";
         if(node1->first_node() != NULL){
             xml_node<> *node2 = node1->first_node("partition");
             xml_node<> *node3 = node2->first_node();
-            // std::cout << "there6\n";
             for(; node3; node3 = node3->next_sibling()){
-                // std::cout << "there7\n";
                 xml_attribute<> *attr = node3->first_attribute();
-                // std::cout << "there8\n" << attr->value() << std::endl;
                 if(atoi(attr->value()) != tasknum){
-                    // std::cout << "there9\n";
                     continue;
                 }
                 else{
-                    // std::cout << "there10\n";
                     std::string s = std::to_string(val);
-                    // std::cout << "there11\n";
                     const char * text = doc.allocate_string(s.c_str(), strlen(s.c_str()));
-                    // std::cout << "there12\n";
                     node3->first_attribute("wcet")->value(text);
-                    // std::cout << "there13\n";
                 }
             }
         }
     }
     std::string data;
     rapidxml::print(std::back_inserter(data), doc);
-    // std::cout << "there\n";
     std::ofstream file2;
     file2.open(path.c_str());
     file2 << data;
     file2.close();
+}
+
+void rec(std::vector<task> anom_tasks, int & opt, int & est, task tmp1, solution tmp2){
+    std::cout << anom_tasks[0].get_taskindex() << " " << anom_tasks[0].get_wcet() << " " << anom_tasks[0].get_bcet() << " \n";
+    for(int j = anom_tasks[0].get_wcet(); j >= anom_tasks[0].get_bcet(); j--){
+        create_inputfile_ue("input1.xml", tmp1.get_taskindex(), j);
+        tmp2.get_upper_estimate("input1.xml");
+        est = tmp2.get_ue();
+        if(est >= opt){
+            opt = est;
+            anom_tasks.erase(anom_tasks.begin());
+            rec(anom_tasks, opt, est, tmp1, tmp2);
+        }
+        else{
+            break;
+        }
+    return;
+    }
 }
 
 void find_solution(task tmp1, solution tmp2, std::vector<task> anom_tasks, std::vector<solution> anom_sol, int & WCRT, std::string path1, std::string path2){
@@ -89,49 +93,20 @@ void find_solution(task tmp1, solution tmp2, std::vector<task> anom_tasks, std::
     int opt = tmp2.get_le();
     tmp2.get_upper_estimate(path1);
     int est = tmp2.get_ue();
+    std::cout << opt << " " << est << "\n";
     system("cp input.xml input1.xml");
     system("cp data.xml data1.xml");
     std::vector<int> wb;
+    rec(anom_tasks, opt, est, tmp1, tmp2);
     
-    for(int i = 0; i < anom_tasks.size(); i++){
-        // std::cout << "2\n";
-        std::cout << "wcet: " << anom_tasks[i].get_wcet() << " bcet: " << anom_tasks[i].get_bcet() << "\n";
-        // for(int j = anom_tasks[i].get_wcet(); j >= anom_tasks[i].get_bcet(); j--){
-        //     // std::cout << "here2\n";
-        //     create_inputfile_le(std::string("data1.xml"), i, j);
-        //     // std::cout << "here3\n";
-        //     tmp2.get_lower_estimate("data1.xml");
-        //     int opt_tmp = tmp2.get_le();
-        //     if(opt_tmp > opt){
-        //         opt = opt_tmp;
-        //     }
-        // }
-        for(int j = anom_tasks[i].get_wcet(); j >= anom_tasks[i].get_bcet(); j--){
-            wb.push_back(j);
-        }
-        for(int j = 0; j < wb.size(); j++){
-            // std::cout << "3\n";
-            create_inputfile_ue(std::string("input1.xml"), i, j);
-            tmp2.get_upper_estimate("input1.xml");
-            est = tmp2.get_ue();
-            std::cout << i  << " " << j << " " << opt << " " << est << "\n";
-            if(est >= opt){
-                opt = est;
-                break;
-            }
-            else{
-                wb.erase(std::remove(wb.begin(), wb.end(), wb[j]), wb.end());
-            }
-        }
-    }
     WCRT = opt;
 }
 
 int main(){
     std::string path1("input.xml");
     std::string path2("data.xml");
-    task tmp1(19);
-    solution tmp2(19);
+    task tmp1(29);
+    solution tmp2(29);
     tmp2.get_lower_estimate(path2);
     tmp2.get_upper_estimate(path1);
     std::cout << tmp2.get_le() << " " << tmp2.get_ue() << "\n";
