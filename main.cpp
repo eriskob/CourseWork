@@ -24,12 +24,12 @@ void create_inputfile_ue(std::string path, int tasknum, int val){
         node = node->next_sibling();
     }
     std::string s = std::to_string(val);
-    const char * text = doc.allocate_string(s.c_str(), strlen(s.c_str()));
+
+    char * text = doc.allocate_string(s.c_str());
     node->first_attribute("wcet")->value(text);
     node->first_attribute("bcet")->value(text);
     std::string data;
     rapidxml::print(std::back_inserter(data), doc);
-
     std::ofstream file2;
     file2.open(path.c_str());
     file2 << data;
@@ -70,21 +70,29 @@ void create_inputfile_le(std::string path, int tasknum, int val){
 }
 
 void rec(std::vector<task> anom_tasks, int & opt, int & est, task tmp1, solution tmp2){
-    std::cout << anom_tasks[0].get_taskindex() << " " << anom_tasks[0].get_wcet() << " " << anom_tasks[0].get_bcet() << " \n";
+    std::cout << "next:\n";
     for(int j = anom_tasks[0].get_wcet(); j >= anom_tasks[0].get_bcet(); j--){
+        std::cout << anom_tasks[0].get_taskindex() << " " << anom_tasks[0].get_wcet() << " " << anom_tasks[0].get_bcet() << " curr: " << j << " \n";
         create_inputfile_ue("input1.xml", anom_tasks[0].get_taskindex(), j);
         tmp2.get_upper_estimate("input1.xml");
         est = tmp2.get_ue();
         if(est >= opt){
             opt = est;
             anom_tasks.erase(anom_tasks.begin());
-            rec(anom_tasks, opt, est, tmp1, tmp2);
+            if(anom_tasks.size() != 0){
+                rec(anom_tasks, opt, est, tmp1, tmp2);
+            }
+            else{
+                return;
+            }
         }
         else{
-            break;
+            system("rm input1.xml");
+            system("cp input.xml input1.xml");
         }
-    return;
+    
     }
+    return;
 }
 
 void find_solution(task tmp1, solution tmp2, std::vector<task> anom_tasks, std::vector<solution> anom_sol, int & WCRT, std::string path1, std::string path2){
@@ -105,8 +113,8 @@ void find_solution(task tmp1, solution tmp2, std::vector<task> anom_tasks, std::
 int main(){
     std::string path1("input.xml");
     std::string path2("data.xml");
-    task tmp1(29);
-    solution tmp2(29);
+    task tmp1(19);
+    solution tmp2(19);
     tmp2.get_lower_estimate(path2);
     tmp2.get_upper_estimate(path1);
     std::cout << tmp2.get_le() << " " << tmp2.get_ue() << "\n";
