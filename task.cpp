@@ -24,9 +24,13 @@ task::task(int num){
     this->prio = atoi(node->first_attribute("prio")->value());
     this->period = atoi(node->first_attribute("period")->value());
     this->procnum = atoi(node->first_attribute("proc")->value());
+    this->deadline = atoi(node->first_attribute("deadline")->value());
 }
 int task::get_taskindex(){
     return this->taskindex;
+}
+int task::get_deadline(){
+    return this->deadline;
 }
 int task::get_wcet(){
     return this->wcet;
@@ -116,8 +120,11 @@ system_config::system_config(){
     xml_node<> *node = root_node->first_node();
     this->tasks = 0;
     for(int i = 0; node; i++){
+        if(node->first_attribute()->name() != std::string("src")){
+            this->tasks++;
+        }
         node = node->next_sibling();
-        this->tasks++;
+        
     }
     xml_node<> *node2 = root_node->first_node();
     this->maj_fr = atoi(node2->first_attribute("maj_fr")->value());

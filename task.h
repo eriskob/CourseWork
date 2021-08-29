@@ -9,10 +9,12 @@ class task{
         int prio;
         int period;
         int procnum;
+        int deadline;
         std::vector<int> anomaltasks;
     public:
         task(int num);
         int get_taskindex();
+        int get_deadline();
         int get_wcet();
         int get_bcet();
         int get_prio();

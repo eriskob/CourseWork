@@ -9,29 +9,15 @@
 using namespace rapidxml;
 solution::solution(int tasknum){
     this->task_num = tasknum;
-    task target(tasknum);
-    std::vector<task> anomal_tasks;
-    // target.find_anomaltasks();
-    // this->num = target.get_anomaltasks().size();
-    // for(int i = 0; i < num; i++){
-    //     anomal_tasks.push_back(target.get_anomaltasks()[i]);
-    // }
-    // for(int i = 0; i < num; i++){
-    //     bounds.push_back(std::pair<int, int>());
-    //     bounds[i].first = anomal_tasks[i].get_bcet();
-    //     bounds[i].second = anomal_tasks[i].get_wcet();
-    // }
-}
-std::vector<std::pair<int, int> >  solution::get_bounds(){
-    return this->bounds;
 }
 void solution::get_lower_estimate(std::string path_file){
     this->lower_est = 0;
+    int tmp_val;
     task tmp(this->task_num);
-    std::string path = std::string("./WCRT/IMASimulator/generator/model_builder/model_builder " + path_file + " > scenario.xml");
+    std::string path = std::string("./WCRT/IMASimulator/generator/model_builder/model_builder ./" + path_file + " > ./scenario.xml");
     system(path.c_str());
     xml_document<char> doc;
-    std::ifstream file("../CourseWorkpubl-master/scenario.xml");
+    std::ifstream file("./scenario.xml");
     std::vector<char> buffer((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     buffer.push_back('\0');
     doc.parse<0>(&buffer[0]);
@@ -44,17 +30,21 @@ void solution::get_lower_estimate(std::string path_file){
         }
         else{
             for(xml_node<> *node1 = node->first_node(); node1; node1 = node1->next_sibling()){
+                xml_attribute<> *attr1 = node1->first_attribute();
+                int job = atoi(attr1->value());
                 for(xml_node<> *node2 = node1->first_node(); node2; node2 = node2->next_sibling()){
                     xml_attribute<> *attr = node2->first_attribute();
                     if(std::string(attr->value()) == "finished"){
-                        this->lower_est += atoi(attr->next_attribute()->value());
+                        // std::cout << "fin: " << atoi(attr->next_attribute()->value()) << "\n";
+                        tmp_val = atoi(attr->next_attribute()->value()) - (job - 1)*tmp.get_period();
+                        // std::cout << "tmp_val: " << tmp_val << "\n";
+                        if(tmp_val > this->lower_est){
+                            this->lower_est = tmp_val;
+                        }
                     }
                 }
             }
         }
-    }
-    if(tmp.get_period() < this->lower_est){
-        this->lower_est -= tmp.get_period();
     }
     // std::cout << this->lower_est << "\n";
 }
