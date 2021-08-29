@@ -220,31 +220,31 @@ void find_solution(task tmp1, solution tmp2, std::vector<task> anom_tasks, std::
 
 int main(){
     create_datafile();
-    // int WCRT;
-    // std::string path1("input.xml");
-    // std::string path2("./data.xml");
-    // task tmp1(19);
-    // solution tmp2(19);
-    // tmp2.get_lower_estimate(path2);
-    // tmp2.get_upper_estimate(path1);
-    // std::cout << "lower and upper: " << tmp2.get_le() << " " << tmp2.get_ue() << "\n";
-    // tmp1.find_anomaltasks();
-    // std::vector<task> anom_tasks;
-    // std::vector<solution> anom_sol;
-    // if(tmp1.get_anomaltasks().size() != 0){
-    //     std::vector<int> anom_t_ind = tmp1.get_anomaltasks();
-    //     std::cout << anom_t_ind[0] << "\n";
-    //     for(int i = 0; i < anom_t_ind.size(); i++){
-    //         anom_tasks.push_back(task(anom_t_ind[i]));
-    //     }
-    //     for(int i = 0; i < anom_t_ind.size(); i++){
-    //         anom_sol.push_back(solution(anom_t_ind[i]));
-    //     }
-    //     std::cout << "here\n";
-    //     find_solution(tmp1, tmp2, anom_tasks, anom_sol, WCRT, path1, path2);
-    // }
-    // else{
-    //     WCRT = tmp2.get_le();
-    // }
-    // std::cout << WCRT << std::endl;
+    int WCRT;
+    std::string path1("input.xml");
+    std::string path2("./data.xml");
+    task tmp1(19);
+    solution tmp2(19);
+    tmp2.get_lower_estimate(path2);
+    tmp2.get_upper_estimate(path1);
+    std::cout << "lower and upper: " << tmp2.get_le() << " " << tmp2.get_ue() << "\n";
+    tmp1.find_anomaltasks();
+    std::vector<task> anom_tasks;
+    std::vector<solution> anom_sol;
+    if(tmp1.get_anomaltasks().size() != 0){
+        std::vector<int> anom_t_ind = tmp1.get_anomaltasks();
+        std::cout << anom_t_ind[0] << "\n";
+        for(int i = 0; i < anom_t_ind.size(); i++){
+            anom_tasks.push_back(task(anom_t_ind[i]));
+        }
+        for(int i = 0; i < anom_t_ind.size(); i++){
+            anom_sol.push_back(solution(anom_t_ind[i]));
+        }
+        std::cout << "here\n";
+        find_solution(tmp1, tmp2, anom_tasks, anom_sol, WCRT, path1, path2);
+    }
+    else{
+        WCRT = tmp2.get_le();
+    }
+    std::cout << WCRT << std::endl;
 }
