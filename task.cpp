@@ -7,9 +7,9 @@
 #include <charconv>
 #include "task.h"
 using namespace rapidxml;
-task::task(int num){
+task::task(int num, std::string inputfile){
     xml_document<char> doc;
-    std::ifstream file("input.xml");
+    std::ifstream file(inputfile.c_str());
     std::vector<char> buffer((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     buffer.push_back('\0');
     doc.parse<0>(&buffer[0]);
@@ -110,9 +110,9 @@ void task::find_anomaltasks(){
 std::vector<int> task::get_anomaltasks(){
     return this->anomaltasks;
 }
-system_config::system_config(){
+system_config::system_config(std::string path){
     xml_document<char> doc;
-    std::ifstream file("input.xml");
+    std::ifstream file(path.c_str());
     std::vector<char> buffer((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     buffer.push_back('\0');
     doc.parse<0>(&buffer[0]);

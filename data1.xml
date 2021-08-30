@@ -154,7 +154,7 @@
 	</module>
 	<module major_frame="5722" name="Module15">
 		<partition id="0" name="m0_part0" scheduler="FPPS">
-			<task id="0" name="task0" wcet="140" prio="0" offset="0" period="5722" deadline="5722"/>
+			<task id="0" name="task0" wcet="88" prio="0" offset="0" period="5722" deadline="5722"/>
 			<task id="5" name="task5" wcet="60" prio="5" offset="0" period="5722" deadline="5722"/>
 			<task id="17" name="task17" wcet="52" prio="17" offset="0" period="5722" deadline="5722"/>
 			<task id="22" name="task22" wcet="156" prio="22" offset="0" period="5722" deadline="5722"/>

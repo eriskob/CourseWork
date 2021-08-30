@@ -12,7 +12,7 @@ class task{
         int deadline;
         std::vector<int> anomaltasks;
     public:
-        task(int num);
+        task(int num, std::string inputfile);
         int get_taskindex();
         int get_deadline();
         int get_wcet();
@@ -27,7 +27,7 @@ class system_config{
         int tasks;
         int maj_fr;
     public:
-        system_config();
+        system_config(std::string path);
         int get_number_of_tasks();
         int get_maj_fr();
 };

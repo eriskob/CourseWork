@@ -205,15 +205,6 @@
 		</partition>
 		<window start="0" stop="5722" partition="0"/>
 	</module>
-	<module major_frame="5722" name="Module20">
-		<partition id="0" name="m0_part0" scheduler="FPPS">
-			<task id="34" name="task34" wcet="236" prio="34" offset="0" period="5722" deadline="5722"/>
-			<task id="52" name="task52" wcet="210" prio="52" offset="0" period="5722" deadline="5722"/>
-			<task id="63" name="task63" wcet="80" prio="63" offset="0" period="5722" deadline="5722"/>
-			<task id="102" name="task102" wcet="38" prio="102" offset="0" period="5722" deadline="5722"/>
-		</partition>
-		<window start="0" stop="5722" partition="0"/>
-	</module>
 	<link src="0" dst="37" delay="55"/>
 	<link src="0" dst="69" delay="39"/>
 	<link src="0" dst="101" delay="38"/>

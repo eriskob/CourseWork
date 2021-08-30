@@ -10,10 +10,10 @@ using namespace rapidxml;
 solution::solution(int tasknum){
     this->task_num = tasknum;
 }
-void solution::get_lower_estimate(std::string path_file){
+void solution::get_lower_estimate(std::string path_file, std::string inputfile){
     this->lower_est = 0;
     int tmp_val;
-    task tmp(this->task_num);
+    task tmp(this->task_num, inputfile.c_str());
     std::string path = std::string("./WCRT/IMASimulator/generator/model_builder/model_builder ./" + path_file + " > ./scenario.xml");
     system(path.c_str());
     xml_document<char> doc;
@@ -35,9 +35,7 @@ void solution::get_lower_estimate(std::string path_file){
                 for(xml_node<> *node2 = node1->first_node(); node2; node2 = node2->next_sibling()){
                     xml_attribute<> *attr = node2->first_attribute();
                     if(std::string(attr->value()) == "finished"){
-                        // std::cout << "fin: " << atoi(attr->next_attribute()->value()) << "\n";
                         tmp_val = atoi(attr->next_attribute()->value()) - (job - 1)*tmp.get_period();
-                        // std::cout << "tmp_val: " << tmp_val << "\n";
                         if(tmp_val > this->lower_est){
                             this->lower_est = tmp_val;
                         }
@@ -46,7 +44,6 @@ void solution::get_lower_estimate(std::string path_file){
             }
         }
     }
-    // std::cout << this->lower_est << "\n";
 }
 int solution::get_le(){
     return this->lower_est;
@@ -78,5 +75,4 @@ void solution::get_upper_estimate(std::string path_file){
         }
     }
     this->upper_est = vals[0];
-    // std::cout << this->upper_est << "\n";
 }

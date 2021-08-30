@@ -12,11 +12,11 @@
 #include "task.h"
 #include "solution.h"
 using namespace rapidxml;
-int find_num_of_proc(){
-    system_config system;
+int find_num_of_proc(std::string inputfile){
+    system_config system(inputfile);
     std::vector<task> tasks;
     for(int i = 0; i < system.get_number_of_tasks(); i++){
-        tasks.push_back(task(i));
+        tasks.push_back(task(i, inputfile.c_str()));
     }
     int t = 0;
     for(int i = 0; i < tasks.size(); i++){
@@ -26,14 +26,14 @@ int find_num_of_proc(){
     }
     return t;
 }
-void create_datafile(){
-    system_config system;
+void create_datafile(std::string inputfile){
+    system_config system(inputfile);
     std::vector<task> tasks;
     for(int i = 0; i < system.get_number_of_tasks(); i++){
-        tasks.push_back(task(i));
+        tasks.push_back(task(i, inputfile));
     }
     xml_document<char> doc;
-    std::ifstream file("input.xml");
+    std::ifstream file(inputfile);
     std::vector<char> buffer((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     buffer.push_back('\0');
     doc.parse<0>(&buffer[0]);
@@ -43,8 +43,9 @@ void create_datafile(){
     std::ofstream file_stored("data.xml");
     xml_node<> *node_wr1 = doc1.allocate_node(node_element, "system");
     doc1.append_node(node_wr1);
-    int proc = find_num_of_proc();
-    for(int i = 0; i < proc; i++){
+    int proc = find_num_of_proc(inputfile);
+    std::cout << "proc: " << proc << "\n";
+    for(int i = 0; i <= proc; i++){
         xml_node<> *node_wr2 = doc1.allocate_node(node_element, "module");
         node_wr1->append_node(node_wr2);
         node_wr2->append_attribute(doc.allocate_attribute("major_frame", std::to_string(system.get_maj_fr()).c_str()));
@@ -90,7 +91,6 @@ void create_datafile(){
         node = node->next_sibling();
     }
     for(; node; node = node->next_sibling()){
-        // node->name("link");
         xml_node<> *node_wr6 = doc1.allocate_node(node_element, "link");
         node_wr1->append_node(node_wr6);
         node_wr6->append_attribute(doc.allocate_attribute("src", node->first_attribute("src")->value()));
@@ -158,14 +158,14 @@ void create_inputfile_le(std::string path, int tasknum, int val){
     file2.close();
 }
 
-void rec(std::vector<task> anom_tasks, int & opt, int & est, task tmp1, solution tmp2){
+void rec(std::vector<task> anom_tasks, int & opt, int & est, task tmp1, solution tmp2, std::string path1){
     for(int i = 0; i < anom_tasks.size(); i++){
         std::cout << anom_tasks[i].get_bcet() << " " << anom_tasks[i].get_wcet() << "\n";
         for(int j = anom_tasks[i].get_wcet(); j >= anom_tasks[i].get_bcet(); j--){
             // std::cout << "here2\n";
             create_inputfile_le(std::string("data1.xml"), i, j);
             // std::cout << "here3\n";
-            tmp2.get_lower_estimate("data1.xml");
+            tmp2.get_lower_estimate("data1.xml", path1);
             int opt_tmp = tmp2.get_le();
             if(opt_tmp > opt){
                 opt = opt_tmp;
@@ -183,7 +183,7 @@ void rec(std::vector<task> anom_tasks, int & opt, int & est, task tmp1, solution
             std::vector<task> anom_tasks_copy = anom_tasks;
             anom_tasks_copy.erase(anom_tasks_copy.begin());
             if(anom_tasks_copy.size() != 0){
-                rec(anom_tasks_copy, opt, est, tmp1, tmp2);
+                rec(anom_tasks_copy, opt, est, tmp1, tmp2, path1);
             }
             else{
                 std::cout << "end\n";
@@ -200,32 +200,38 @@ void rec(std::vector<task> anom_tasks, int & opt, int & est, task tmp1, solution
 }
 
 void find_solution(task tmp1, solution tmp2, std::vector<task> anom_tasks, std::vector<solution> anom_sol, int & WCRT, std::string path1, std::string path2){
-    // std::cout << "1\n";
-    tmp2.get_lower_estimate(path2);
+    tmp2.get_lower_estimate(path2, path1);
     int opt = tmp2.get_le();
     tmp2.get_upper_estimate(path1);
     int est = tmp2.get_ue();
     std::cout << opt << " " << est << "\n";
-    system("cp input.xml input1.xml");
-    system("cp data.xml data1.xml");
+    std::string path1_cp = "cp " + path1 + " input1.xml";
+    std::string path2_cp = "cp " + path2 + " data1.xml";
+    system(path1_cp.c_str());
+    system(path2_cp.c_str());
     std::vector<int> wb;
     if(opt == est){
         WCRT = opt;
         return;
     }
-    rec(anom_tasks, opt, est, tmp1, tmp2);
+    rec(anom_tasks, opt, est, tmp1, tmp2, path1);
     
     WCRT = opt;
 }
 
 int main(){
-    create_datafile();
     int WCRT;
-    std::string path1("input.xml");
+    std::string path1;
+    std::cout << "enter input file name: ";
+    std::cin >> path1;
+    create_datafile(path1);
     std::string path2("./data.xml");
-    task tmp1(19);
-    solution tmp2(19);
-    tmp2.get_lower_estimate(path2);
+    std::cout << "enter task number: ";
+    int task_number;
+    std::cin >> task_number;
+    task tmp1(task_number, path1.c_str());
+    solution tmp2(task_number);
+    tmp2.get_lower_estimate(path2, path1);
     tmp2.get_upper_estimate(path1);
     std::cout << "lower and upper: " << tmp2.get_le() << " " << tmp2.get_ue() << "\n";
     tmp1.find_anomaltasks();
@@ -235,7 +241,7 @@ int main(){
         std::vector<int> anom_t_ind = tmp1.get_anomaltasks();
         std::cout << anom_t_ind[0] << "\n";
         for(int i = 0; i < anom_t_ind.size(); i++){
-            anom_tasks.push_back(task(anom_t_ind[i]));
+            anom_tasks.push_back(task(anom_t_ind[i], path1));
         }
         for(int i = 0; i < anom_t_ind.size(); i++){
             anom_sol.push_back(solution(anom_t_ind[i]));
