@@ -11,6 +11,7 @@
 #include "rapidxml/rapidxml_print.hpp"
 #include "task.h"
 #include "solution.h"
+#include <chrono>
 using namespace rapidxml;
 int find_num_of_proc(std::string inputfile){
     system_config system(inputfile);
@@ -159,26 +160,25 @@ void create_inputfile_le(std::string path, int tasknum, int val){
 }
 
 void rec(std::vector<task> anom_tasks, int & opt, int & est, task tmp1, solution tmp2, std::string path1){
-    for(int i = 0; i < anom_tasks.size(); i++){
-        std::cout << anom_tasks[i].get_bcet() << " " << anom_tasks[i].get_wcet() << "\n";
-        for(int j = anom_tasks[i].get_wcet(); j >= anom_tasks[i].get_bcet(); j--){
-            // std::cout << "here2\n";
-            create_inputfile_le(std::string("data1.xml"), i, j);
-            // std::cout << "here3\n";
-            tmp2.get_lower_estimate("data1.xml", path1);
-            int opt_tmp = tmp2.get_le();
-            if(opt_tmp > opt){
-                opt = opt_tmp;
-            }
+    std::cout << "next:\n";
+    std::cout << anom_tasks[0].get_bcet() << " " << anom_tasks[0].get_wcet() << "\n";
+    for(int j = anom_tasks[0].get_wcet(); j >= anom_tasks[0].get_bcet(); j--){
+        std::cout << "\n task number: " << anom_tasks[0].get_taskindex() << " wcet: " << j << "\n";
+        create_inputfile_le(std::string("data1.xml"), anom_tasks[0].get_taskindex(), j);
+        // std::cout << "here3\n";
+        tmp2.get_lower_estimate("data1.xml", path1);
+        int opt_tmp = tmp2.get_le();
+        std::cout << "opt: " << opt_tmp << "\n";
+        if(opt_tmp > opt){
+            opt = opt_tmp;
         }
     }
-    std::cout << "next:\n";
     for(int j = anom_tasks[0].get_wcet(); j >= anom_tasks[0].get_bcet(); j--){
         std::cout << anom_tasks[0].get_taskindex() << " " << anom_tasks[0].get_wcet() << " " << anom_tasks[0].get_bcet() << " curr: " << j << " \n";
         create_inputfile_ue("input1.xml", anom_tasks[0].get_taskindex(), j);
         tmp2.get_upper_estimate("input1.xml");
         est = tmp2.get_ue();
-        if(est >= opt){
+        if(est > opt){
             opt = est;
             std::vector<task> anom_tasks_copy = anom_tasks;
             anom_tasks_copy.erase(anom_tasks_copy.begin());
@@ -190,11 +190,6 @@ void rec(std::vector<task> anom_tasks, int & opt, int & est, task tmp1, solution
                 return;
             }
         }
-        else{
-            // system("rm input1.xml");
-            // system("cp input.xml input1.xml");
-        }
-    
     }
     return;
 }
@@ -230,13 +225,17 @@ int main(){
     int task_number;
     std::cin >> task_number;
     task tmp1(task_number, path1.c_str());
+    task tmp3(0, path1.c_str());
+    std::cout << tmp3.get_wcet() << "\n";
     solution tmp2(task_number);
     tmp2.get_lower_estimate(path2, path1);
     tmp2.get_upper_estimate(path1);
     std::cout << "lower and upper: " << tmp2.get_le() << " " << tmp2.get_ue() << "\n";
-    tmp1.find_anomaltasks();
+    tmp1.find_anomaltasks(path1);
+    std::cout << "anom tasks size: " << tmp1.get_anomaltasks().size() << std::endl;
     std::vector<task> anom_tasks;
     std::vector<solution> anom_sol;
+    auto started = std::chrono::high_resolution_clock::now();
     if(tmp1.get_anomaltasks().size() != 0){
         std::vector<int> anom_t_ind = tmp1.get_anomaltasks();
         std::cout << anom_t_ind[0] << "\n";
@@ -252,5 +251,9 @@ int main(){
     else{
         WCRT = tmp2.get_le();
     }
-    std::cout << WCRT << std::endl;
+    auto done = std::chrono::high_resolution_clock::now();
+    std::cout << "anom tasks size: " << tmp1.get_anomaltasks().size() << std::endl;
+    std::cout << "lower and upper: " << tmp2.get_le() << " " << tmp2.get_ue() << "\n";
+    std::cout << "WCRT: " << WCRT << std::endl;
+    std::cout << "time taken: " << std::chrono::duration_cast<std::chrono::milliseconds>(done-started).count() << " ms" << std::endl;
 }

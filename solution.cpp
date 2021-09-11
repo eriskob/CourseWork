@@ -36,9 +36,11 @@ void solution::get_lower_estimate(std::string path_file, std::string inputfile){
                     xml_attribute<> *attr = node2->first_attribute();
                     if(std::string(attr->value()) == "finished"){
                         tmp_val = atoi(attr->next_attribute()->value()) - (job - 1)*tmp.get_period();
+                        std::cout << "\n tmp_val: " << tmp_val << "\n";
                         if(tmp_val > this->lower_est){
                             this->lower_est = tmp_val;
                         }
+                        std::cout << "\nlower est: " << this->lower_est << "\n";
                     }
                 }
             }

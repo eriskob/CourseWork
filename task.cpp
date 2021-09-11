@@ -47,8 +47,8 @@ int task::get_period(){
 int task::get_procnum(){
     return this->procnum;
 }
-void task::find_anomaltasks(){
-    std::string path = std::string("python3 ../CourseworkPubl-master/mainBS.py ") + std::string(std::to_string(this->taskindex)) + std::string(" >output.txt");
+void task::find_anomaltasks(std::string inputfile){
+    std::string path = std::string("python3 ../CourseworkPubl-master/mainBS.py ") + inputfile/*+ std::string(std::to_string(this->taskindex))*/ + std::string(" >output.txt");
     system(path.c_str());
     std::string buffer, num, set, lil_num;
     std::ifstream requests("./output.txt");

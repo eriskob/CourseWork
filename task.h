@@ -20,7 +20,7 @@ class task{
         int get_prio();
         int get_period();
         int get_procnum();
-        void find_anomaltasks();
+        void find_anomaltasks(std::string inpufile);
         std::vector<int> get_anomaltasks();
 };
 class system_config{
